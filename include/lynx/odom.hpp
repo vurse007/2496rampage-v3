@@ -52,7 +52,7 @@ namespace lynx {
             //motion algorithms are defined under the src/motion folder
             //~
 
-            void mtp(double x, double y, int timeout, double scale);
-            void mtp(double x, double y, double theta, int timeout, double scale);
+            void mtp(double x, double y, int timeout, double scale, bool forwards = true, double close_threshold = 7.5);
+            void mtp(double x, double y, double theta, double lead=0.6, int timeout, double scale, bool forwards = true, double close_threshold = 7.5);
     };
 }
