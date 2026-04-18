@@ -7,10 +7,12 @@ namespace lynx {
     odom_drive::point::point(double x, double y): x(x), y(y), has_theta(false) {}
     odom_drive::point::point(double x, double y, double theta): x(x), y(y), theta(theta), has_theta(true){}
 
-    odom_drive::odom_drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, const double max_speed, const double max_accel)
+    odom_drive::odom_drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, const double max_speed, const double max_accel, const double settle_dist_tol, const double settle_heading_tol)
         : drive(ls, rs, wd, egr, tw, imu, vertical_pod, horizontal_pod, v_offset, h_offset, pwd),
           max_speed(max_speed),
-          max_accel(max_accel) {
+          max_accel(max_accel),
+          settle_dist_tolerance(settle_dist_tol),
+          settle_heading_tolerance(settle_heading_tol) {
 
           if (this->horizontal_pod == nullptr){
             o_type = odom_type::VERT;
@@ -75,7 +77,9 @@ namespace lynx {
       current_pos.theta = lynx::utility::degrees_to_radians(desired_deg);
 
       prev_horizontal_in = (o_type != odom_type::VERT) ? pod_ticks_to_inches(horizontal_encoder_raw) : 0.0;
-      prev_vertical_in   = pod_ticks_to_inches(vertical_encoder_raw);
+      prev_vertical_in   = (o_type == odom_type::HORIZ)
+          ? lynx::utility::motor_to_inches(vertical_encoder_raw, wheel_diameter) * external_gear_ratio
+          : pod_ticks_to_inches(vertical_encoder_raw);
       prev_theta         = current_pos.theta;
     }
     void odom_drive::reset(double nx, double ny, double nt){
@@ -93,7 +97,9 @@ namespace lynx {
       current_pos.theta = nt;
 
       prev_horizontal_in = (o_type != odom_type::VERT) ? pod_ticks_to_inches(horizontal_encoder_raw) : 0.0;
-      prev_vertical_in   = pod_ticks_to_inches(vertical_encoder_raw);
+      prev_vertical_in   = (o_type == odom_type::HORIZ)
+          ? lynx::utility::motor_to_inches(vertical_encoder_raw, wheel_diameter) * external_gear_ratio
+          : pod_ticks_to_inches(vertical_encoder_raw);
       prev_theta         = current_pos.theta;
     }
 
@@ -111,7 +117,12 @@ namespace lynx {
 
       // --- raw encoder deltas ---
       const double h_in_now = (o_type != odom_type::VERT) ? pod_ticks_to_inches(horizontal_encoder_raw) : 0.0;
-      const double v_in_now = pod_ticks_to_inches(vertical_encoder_raw);
+
+      // in HORIZ mode vertical_encoder_raw holds drive-motor ticks instead of
+      // rotation-sensor centidegrees, so convert via the drive wheel (assumes blue carts).
+      const double v_in_now = (o_type == odom_type::HORIZ)
+          ? lynx::utility::motor_to_inches(vertical_encoder_raw, wheel_diameter) * external_gear_ratio
+          : pod_ticks_to_inches(vertical_encoder_raw);
 
       double dS = (o_type != odom_type::VERT) ? (h_in_now - prev_horizontal_in) : 0.0;
       double dF = v_in_now - prev_vertical_in;

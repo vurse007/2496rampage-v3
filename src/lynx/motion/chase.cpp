@@ -111,6 +111,46 @@ namespace lynx {
         }
 
         move(0, 0);
+
+        // Terminal settle: Ramsete ends on trajectory time, not convergence.
+        // If the robot is already inside the shared settle tolerances we skip
+        // the handoff entirely (time efficiency). Otherwise we hand off to
+        // mtp with parameters derived from the chase() inputs so the settle
+        // behavior stays coherent with the caller's intent.
+        const Waypoint& goal = path.back();
+
+        const double dx_goal = goal.x - current_pos.x;
+        const double dy_goal = goal.y - current_pos.y;
+        const double dist_to_goal = std::hypot(dx_goal, dy_goal);
+
+        const double goal_theta_rad = utility::wrap_to_pi(utility::degrees_to_radians(goal.heading));
+        const double heading_err_deg = std::fabs(utility::radians_to_degrees(
+            utility::wrap_to_pi(goal_theta_rad - current_pos.theta)));
+
+        const bool already_settled =
+            dist_to_goal   <= settle_dist_tolerance &&
+            heading_err_deg <= settle_heading_tolerance;
+
+        if (!already_settled) {
+            // timeout: fixed fraction of caller's budget, bounded so short
+            // paths still get a meaningful settle window.
+            const int settle_timeout = std::clamp(timeout / 4, 500, 2000);
+
+            // scale: match the approach speed the profile ended at, so a
+            // gentle arrival yields a gentle settle. floor keeps authority
+            // if the profile terminated near zero velocity.
+            const double settle_scale = std::clamp(
+                goal.velocity / std::max(1.0, max_speed), 0.4, 1.0);
+
+            // lead: tied to terminal path curvature. straight endings want
+            // a small lead (crisp snap); curved endings want a larger lead
+            // to preserve the approach heading.
+            const double settle_lead = std::clamp(
+                0.2 + 20.0 * std::fabs(goal.curvature), 0.2, 0.5);
+
+            mtp(goal.x, goal.y, goal.heading,
+                settle_lead, settle_timeout, settle_scale);
+        }
     }
 
     void odom_drive::chase(std::initializer_list<BezierPath::ControlPoint> pts,

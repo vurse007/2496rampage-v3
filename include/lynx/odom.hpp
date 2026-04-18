@@ -36,11 +36,17 @@ namespace lynx {
             double max_speed;
             double max_accel;
 
+            // shared settle tolerances for odometry-based motions (mtp, chase).
+            // distance in inches, heading in degrees. a motion is considered
+            // "settled" when lateral/heading error stay inside these bands.
+            double settle_dist_tolerance;
+            double settle_heading_tolerance;
+
             point current_pos{0.0, 0.0, 0.0};
 
             pros::Task* odom_task = nullptr;
 
-            odom_drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, const double max_speed, const double max_accel);
+            odom_drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, const double max_speed, const double max_accel, const double settle_dist_tol = 1.0, const double settle_heading_tol = 1.0);
 
             ~odom_drive();
 

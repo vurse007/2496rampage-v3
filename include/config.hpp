@@ -28,7 +28,9 @@ namespace global {
         0,
         2,
         63, //GEOOOOOOOOOOOOORGE RUSSELLL
-        150
+        150,
+        1.0, // settle_dist_tolerance (inches)
+        1.0  // settle_heading_tolerance (degrees)
     };
 
 }

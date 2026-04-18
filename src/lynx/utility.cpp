@@ -52,14 +52,14 @@ namespace lynx {
         }
 
         double motor_to_inches(double ticks, double wheel_diameter, pros::v5::MotorGears cartridge){
-            int tps = 300;
+            double tps = 300.0;
             if (cartridge == pros::v5::MotorGears::green){
-                tps = 900;
+                tps = 900.0;
             }
             else if (cartridge == pros::v5::MotorGears::red){
-                tps = 1800;
+                tps = 1800.0;
             }
-            return (ticks / 300.0) * (M_PI * wheel_diameter);
+            return (ticks / tps) * (M_PI * wheel_diameter);
         }
 
 

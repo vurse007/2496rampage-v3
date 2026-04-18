@@ -48,7 +48,7 @@ namespace lynx {
 
             move(static_cast<int>(left_power), static_cast<int>(right_power));
 
-            if (std::fabs(lateral_error) <= drive_pid->settle_range) {
+            if (std::fabs(lateral_error) <= settle_dist_tolerance) {
                 if (!drive_pid->settle_timer.running)
                     drive_pid->settle_timer.start();
             } else {
@@ -138,7 +138,7 @@ namespace lynx {
             move(static_cast<int>(left_power), static_cast<int>(right_power));
 
             // lateral settle
-            if (std::fabs(lateral_error) <= drive_pid->settle_range) {
+            if (std::fabs(lateral_error) <= settle_dist_tolerance) {
                 if (!drive_pid->settle_timer.running)
                     drive_pid->settle_timer.start();
             } else {
@@ -152,7 +152,7 @@ namespace lynx {
             }
 
             // angular settle
-            if (std::fabs(angular_error_deg) <= turn_pid->settle_range) {
+            if (std::fabs(angular_error_deg) <= settle_heading_tolerance) {
                 if (!turn_pid->settle_timer.running)
                     turn_pid->settle_timer.start();
             } else {
