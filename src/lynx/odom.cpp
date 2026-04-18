@@ -7,8 +7,10 @@ namespace lynx {
     odom_drive::point::point(double x, double y): x(x), y(y), has_theta(false) {}
     odom_drive::point::point(double x, double y, double theta): x(x), y(y), theta(theta), has_theta(true){}
 
-    odom_drive::odom_drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd)
-        : drive(ls, rs, wd, egr, tw, imu, vertical_pod, horizontal_pod, v_offset, h_offset, pwd) {
+    odom_drive::odom_drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, const double max_speed, const double max_accel)
+        : drive(ls, rs, wd, egr, tw, imu, vertical_pod, horizontal_pod, v_offset, h_offset, pwd),
+          max_speed(max_speed),
+          max_accel(max_accel) {
 
           if (this->horizontal_pod == nullptr){
             o_type = odom_type::VERT;

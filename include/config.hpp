@@ -25,7 +25,10 @@ namespace global {
         &verticalPod,
         &horizontalPod,
         0,
-        0
+        0,
+        2,
+        63, //GEOOOOOOOOOOOOORGE RUSSELLL
+        150
     };
 
 }
