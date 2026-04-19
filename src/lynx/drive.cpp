@@ -72,12 +72,12 @@ namespace lynx {
         }
     }
 
-    drive::drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, double pwd):
-        left(ls), right(rs), wheel_diameter(wd), external_gear_ratio(egr), track_width(tw), imu(imu), vertical_pod(vertical_pod), horizontal_pod(horizontal_pod), vertical_offset(v_offset), horizontal_offset(h_offset), pod_wheel_diameter(pwd){}
+    drive::drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, PID* hc, PID* tp, PID* dp, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, double pwd):
+        left(ls), right(rs), wheel_diameter(wd), external_gear_ratio(egr), track_width(tw), heading_corrector(hc), turn_pid(tp), drive_pid(dp), imu(imu), vertical_pod(vertical_pod), horizontal_pod(horizontal_pod), vertical_offset(v_offset), horizontal_offset(h_offset), pod_wheel_diameter(pwd){}
 
     // PTO-enabled constructor: delegate to the standard ctor, then init the PTO bits.
-    drive::drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, std::uint8_t pistonA_port, const std::vector<motor_specs>& extraA_specs):
-        drive(ls, rs, wd, egr, tw, imu, vertical_pod, horizontal_pod, v_offset, h_offset, pwd)
+    drive::drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, PID* hc, PID* tp, PID* dp, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, char pistonA_port, const std::vector<motor_specs>& extraA_specs):
+        drive(ls, rs, wd, egr, tw, hc, tp, dp, imu, vertical_pod, horizontal_pod, v_offset, h_offset, pwd)
     {
         pistonA.emplace(pistonA_port, false);
         extraA.emplace(extraA_specs);
@@ -87,7 +87,7 @@ namespace lynx {
     }
 
     // helper functions to do common tasks to motors
-    void drive::set_brake_mode(pros::motor_brake_mode_e mode) {
+    void drive::set_brake_mode(pros::motor_brake_mode_e_t mode) {
         left.set_brake_mode(mode);
         right.set_brake_mode(mode);
         if (has_pto) extraA->set_brake_mode(mode);

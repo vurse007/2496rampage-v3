@@ -60,9 +60,9 @@ namespace lynx {
             const double track_width;
 
             const double pod_wheel_diameter;
-
-            const double horizontal_offset;
             const double vertical_offset;
+            const double horizontal_offset;
+            
 
             pros::Imu* imu;
             pros::Rotation* vertical_pod;
@@ -79,14 +79,14 @@ namespace lynx {
             bool                                 has_pto    = false;
 
             // standard constructor — no PTO
-            drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd = 2);
+            drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, PID* hc, PID* tp, PID* dp, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd = 2);
 
             // PTO-enabled constructor — adds a piston + 2-motor shiftable group
-            drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, std::uint8_t pistonA_port, const std::vector<motor_specs>& extraA_specs);
+            drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, PID* hc, PID* tp, PID* dp, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, char pistonA_port, const std::vector<motor_specs>& extraA_specs);
 
             virtual ~drive() = default;
 
-            void set_brake_mode(pros::motor_brake_mode_e mode);
+            void set_brake_mode(pros::motor_brake_mode_e_t mode);
 
             virtual void move(int left_velocity, int right_velocity);
 

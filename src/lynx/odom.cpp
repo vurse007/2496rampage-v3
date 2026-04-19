@@ -7,8 +7,8 @@ namespace lynx {
     odom_drive::point::point(double x, double y): x(x), y(y), has_theta(false) {}
     odom_drive::point::point(double x, double y, double theta): x(x), y(y), theta(theta), has_theta(true){}
 
-    odom_drive::odom_drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, const double max_speed, const double max_accel, const double settle_dist_tol, const double settle_heading_tol)
-        : drive(ls, rs, wd, egr, tw, imu, vertical_pod, horizontal_pod, v_offset, h_offset, pwd),
+    odom_drive::odom_drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, PID* hc, PID* tp, PID* dp, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, const double max_speed, const double max_accel, const double settle_dist_tol, const double settle_heading_tol)
+        : drive(ls, rs, wd, egr, tw, hc, tp, dp, imu, vertical_pod, horizontal_pod, v_offset, h_offset, pwd),
           max_speed(max_speed),
           max_accel(max_accel),
           settle_dist_tolerance(settle_dist_tol),
@@ -18,8 +18,8 @@ namespace lynx {
 
     // PTO-enabled constructor: forwards through to drive's PTO ctor, then runs
     // the same post-construction odom setup as the standard constructor.
-    odom_drive::odom_drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, const double max_speed, const double max_accel, const double settle_dist_tol, const double settle_heading_tol, std::uint8_t pistonA_port, const std::vector<motor_specs>& extraA_specs)
-        : drive(ls, rs, wd, egr, tw, imu, vertical_pod, horizontal_pod, v_offset, h_offset, pwd, pistonA_port, extraA_specs),
+    odom_drive::odom_drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, PID* hc, PID* tp, PID* dp, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, const double max_speed, const double max_accel, const double settle_dist_tol, const double settle_heading_tol, char pistonA_port, const std::vector<motor_specs>& extraA_specs)
+        : drive(ls, rs, wd, egr, tw, hc, tp, dp, imu, vertical_pod, horizontal_pod, v_offset, h_offset, pwd, pistonA_port, extraA_specs),
           max_speed(max_speed),
           max_accel(max_accel),
           settle_dist_tolerance(settle_dist_tol),

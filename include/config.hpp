@@ -7,6 +7,42 @@ namespace global {
     inline pros::Rotation verticalPod(20);
     inline pros::Rotation horizontalPod(19);
 
+    inline lynx::PID heading_correction {
+        {0,0,0},
+        {0,0,0},
+        0, 
+        0, 
+        0, 
+        0, 
+        0, 
+        0, 
+        0
+    };
+    
+    inline lynx::PID turn_pid {
+        {0,0,0},
+        {0,0,0},
+        0, 
+        0, 
+        0, 
+        0, 
+        0, 
+        0, 
+        0
+    };
+    
+    inline lynx::PID drive_pid {
+        {0,0,0},
+        {0,0,0},
+        0, 
+        0, 
+        0, 
+        0, 
+        0, 
+        0, 
+        0
+    };
+
     inline lynx::odom_drive chassis {
         {
             {1, pros::v5::MotorGears::blue},
@@ -21,6 +57,9 @@ namespace global {
         2.75,
         1,
         12.0,
+        &heading_correction,
+        &turn_pid,
+        &drive_pid,
         &imu,
         &verticalPod,
         &horizontalPod,
