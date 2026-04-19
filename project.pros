@@ -592,7 +592,8 @@
       }
     },
     "upload_options": {
-      "icon": "pros"
+      "icon": "planet",
+      "description": "powered by lynx"
     },
     "use_early_access": true
   }
