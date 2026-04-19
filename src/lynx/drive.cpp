@@ -75,15 +75,43 @@ namespace lynx {
     drive::drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, double pwd):
         left(ls), right(rs), wheel_diameter(wd), external_gear_ratio(egr), track_width(tw), imu(imu), vertical_pod(vertical_pod), horizontal_pod(horizontal_pod), vertical_offset(v_offset), horizontal_offset(h_offset), pod_wheel_diameter(pwd){}
 
+    // PTO-enabled constructor: delegate to the standard ctor, then init the PTO bits.
+    drive::drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, std::uint8_t pistonA_port, const std::vector<motor_specs>& extraA_specs):
+        drive(ls, rs, wd, egr, tw, imu, vertical_pod, horizontal_pod, v_offset, h_offset, pwd)
+    {
+        pistonA.emplace(pistonA_port, false);
+        extraA.emplace(extraA_specs);
+        curr_state = DriveState::CHASSIS_STANDARD;
+        has_pto    = true;
+        pistonA->set_value(false);
+    }
+
     // helper functions to do common tasks to motors
     void drive::set_brake_mode(pros::motor_brake_mode_e mode) {
         left.set_brake_mode(mode);
         right.set_brake_mode(mode);
+        if (has_pto) extraA->set_brake_mode(mode);
     }
 
     void drive::move(int left_velocity, int right_velocity) {
         left.move(left_velocity);
         right.move(right_velocity);
+
+        // PTO routing: when the shifter is in CHASSIS_8, the extra motors
+        // assist the drivetrain. The first half of extraA is treated as the
+        // left side and the remainder as the right side, so the group can be
+        // any size (2, 4, 6, ...). For odd counts the extra motor goes right.
+        // In CHASSIS_STANDARD the motors belong to the auxiliary subsystem
+        // and are driven via move_subgroup instead.
+        if (has_pto && curr_state == DriveState::CHASSIS_8) {
+            const auto& motors = extraA->get_motors();
+            const std::size_t n    = motors.size();
+            const std::size_t half = n / 2;
+            for (std::size_t i = 0; i < half; ++i)
+                if (motors[i]) motors[i]->move(left_velocity);
+            for (std::size_t i = half; i < n; ++i)
+                if (motors[i]) motors[i]->move(right_velocity);
+        }
     }
 
     void drive::tare() {
@@ -114,6 +142,29 @@ namespace lynx {
         for (const auto& motor : right.get_motors()) {
             if (motor) func(motor);
         }
+    }
+
+    // ---- PTO API ----
+    void drive::set_state(DriveState s) {
+        if (!has_pto) return;
+        curr_state = s;
+        // CHASSIS_8 → piston extended (extraA into drivetrain),
+        // CHASSIS_STANDARD → piston retracted (extraA into auxiliary subsystem)
+        pistonA->set_value(s == DriveState::CHASSIS_8);
+    }
+
+    void drive::move_subgroup(int power) {
+        if (!has_pto) return;
+        // extraA only acts as the auxiliary subsystem in CHASSIS_STANDARD.
+        if (curr_state != DriveState::CHASSIS_STANDARD) return;
+        // All motors run together when used as a subgroup, regardless of size.
+        extraA->move(-power);
+    }
+
+    double drive::get_extra_temp(int index) const {
+        if (!has_pto) return 0.0;
+        auto m = extraA->get_motor(index);
+        return m ? m->get_temperature() : 0.0;
     }
 
 }

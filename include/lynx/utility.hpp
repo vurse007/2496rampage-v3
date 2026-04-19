@@ -39,6 +39,8 @@ namespace lynx {
 
         //absolute turn logic helper
         double get_abs_rot_err(double target, double current);
+
+        void print_info(int time, pros::Controller *controller, const std::vector<std::string>& labels, const std::vector<double>& values);
+
     }
-    
 }

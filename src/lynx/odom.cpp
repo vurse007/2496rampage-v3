@@ -13,29 +13,43 @@ namespace lynx {
           max_accel(max_accel),
           settle_dist_tolerance(settle_dist_tol),
           settle_heading_tolerance(settle_heading_tol) {
-
-          if (this->horizontal_pod == nullptr){
-            o_type = odom_type::VERT;
-          }
-          else if (this->vertical_pod == nullptr){
-            o_type = odom_type::HORIZ;
-          }
-          else {
-            o_type = odom_type::DUAL;
-          }
-
-          odom_task = new pros::Task(
-              [](void* param){
-                  odom_drive* odom = static_cast<odom_drive*>(param);
-                  while(true){
-                      odom->update();
-                      pros::delay(10);
-                  }
-              },
-              this,
-              "odom_drive_task"
-          );
+          init_odom_runtime();
         }
+
+    // PTO-enabled constructor: forwards through to drive's PTO ctor, then runs
+    // the same post-construction odom setup as the standard constructor.
+    odom_drive::odom_drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, const double max_speed, const double max_accel, const double settle_dist_tol, const double settle_heading_tol, std::uint8_t pistonA_port, const std::vector<motor_specs>& extraA_specs)
+        : drive(ls, rs, wd, egr, tw, imu, vertical_pod, horizontal_pod, v_offset, h_offset, pwd, pistonA_port, extraA_specs),
+          max_speed(max_speed),
+          max_accel(max_accel),
+          settle_dist_tolerance(settle_dist_tol),
+          settle_heading_tolerance(settle_heading_tol) {
+          init_odom_runtime();
+        }
+
+    void odom_drive::init_odom_runtime(){
+        if (this->horizontal_pod == nullptr){
+            o_type = odom_type::VERT;
+        }
+        else if (this->vertical_pod == nullptr){
+            o_type = odom_type::HORIZ;
+        }
+        else {
+            o_type = odom_type::DUAL;
+        }
+
+        odom_task = new pros::Task(
+            [](void* param){
+                odom_drive* odom = static_cast<odom_drive*>(param);
+                while(true){
+                    odom->update();
+                    pros::delay(10);
+                }
+            },
+            this,
+            "odom_drive_task"
+        );
+    }
 
     odom_drive::~odom_drive(){
       if(odom_task){

@@ -67,6 +67,37 @@ namespace lynx {
             return fmod((target - current + 540), 360) - 180;
         }
 
+        void print_info(int time, pros::Controller *controller, const std::vector<std::string>& labels, const std::vector<double>& values) {
+            if (!controller || labels.empty() || labels.size() != values.size()) return;
+
+            const int pairs_per_line = std::ceil(labels.size() / 3.0);
+
+            auto build_line = [&](int start, int end) -> std::string {
+                std::ostringstream oss;
+                oss << std::fixed << std::setprecision(2); // two decimal places
+                for (int i = start; i < end && i < (int)labels.size(); ++i) {
+                    oss << labels[i] << ": " << values[i];
+                    if (i < end - 1 && i < (int)labels.size() - 1) oss << " | ";
+                }
+                return oss.str();
+            };
+
+            if (time % 50 == 0 && time % 100 != 0 && time % 150 != 0) {
+                std::string line0 = build_line(0, pairs_per_line);
+                controller->print(0, 0, "%s   ", line0.c_str());
+            }
+
+            if (time % 100 == 0 && time % 150 != 0) {
+                std::string line1 = build_line(pairs_per_line, pairs_per_line * 2);
+                controller->print(1, 0, "%s   ", line1.c_str());
+            }
+
+            if (time % 150 == 0 && time % 300 != 0) {
+                std::string line2 = build_line(pairs_per_line * 2, pairs_per_line * 3);
+                controller->print(2, 0, "%s   ", line2.c_str());
+            }
+        }
+
     }
     
 }

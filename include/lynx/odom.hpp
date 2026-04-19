@@ -46,9 +46,19 @@ namespace lynx {
 
             pros::Task* odom_task = nullptr;
 
+            // standard constructor — no PTO
             odom_drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, const double max_speed, const double max_accel, const double settle_dist_tol = 1.0, const double settle_heading_tol = 1.0);
 
+            // PTO-enabled constructor — adds a piston + 2-motor shiftable group
+            odom_drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, const double max_speed, const double max_accel, const double settle_dist_tol, const double settle_heading_tol, std::uint8_t pistonA_port, const std::vector<motor_specs>& extraA_specs);
+
             ~odom_drive();
+
+        private:
+            // shared post-construction setup (o_type detection + odom task spawn)
+            void init_odom_runtime();
+
+        public:
 
             double pod_ticks_to_inches(double ticks) const;
 

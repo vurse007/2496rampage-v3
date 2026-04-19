@@ -2,6 +2,9 @@
 #include "main.h"
 #include "pid.hpp"
 
+#include <optional>
+#include <vector>
+
 namespace lynx {
     struct motor_specs {
         int port;
@@ -34,6 +37,19 @@ namespace lynx {
 
     void apply_to_group(group& motor_group, const std::function<void(std::shared_ptr<pros::Motor>)>& func);
 
+    // -------------------------------------------------------------------------
+    // DriveState — logical PTO transmission modes.
+    //   CHASSIS_STANDARD : extraA routes to the secondary subsystem (e.g. intake)
+    //   CHASSIS_8        : extraA assists the drivetrain
+    // Only meaningful when the chassis was constructed with the PTO overload.
+    //
+    // extraA may contain any number of motors. In CHASSIS_8 the first half of
+    // the motor list (by index) is driven as the left side and the remainder
+    // as the right side; for odd counts the extra motor goes to the right.
+    // In CHASSIS_STANDARD all motors run together via move_subgroup().
+    // -------------------------------------------------------------------------
+    enum class DriveState { CHASSIS_STANDARD, CHASSIS_8 };
+
     class drive{
         public:
             group left;
@@ -56,7 +72,17 @@ namespace lynx {
             PID* turn_pid;
             PID* drive_pid;
 
+            // ---- optional PTO (only populated by the PTO-enabled constructor) ----
+            std::optional<pros::adi::Pneumatics> pistonA;
+            std::optional<group>                 extraA;
+            DriveState                           curr_state = DriveState::CHASSIS_STANDARD;
+            bool                                 has_pto    = false;
+
+            // standard constructor — no PTO
             drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd = 2);
+
+            // PTO-enabled constructor — adds a piston + 2-motor shiftable group
+            drive(const std::vector<motor_specs>& ls, const std::vector<motor_specs>& rs, const double wd, const double egr, const double tw, pros::Imu* imu, pros::Rotation* vertical_pod, pros::Rotation* horizontal_pod, const double v_offset, const double h_offset, const double pwd, std::uint8_t pistonA_port, const std::vector<motor_specs>& extraA_specs);
 
             virtual ~drive() = default;
 
@@ -74,7 +100,11 @@ namespace lynx {
 
             void apply_to_drive(const std::function<void(std::shared_ptr<pros::Motor>)>& func);
 
-            
+            // ---- PTO API (no-ops when has_pto == false) ----
+            void       set_state(DriveState s);
+            DriveState get_state() const { return curr_state; }
+            void       move_subgroup(int power);
+            double     get_extra_temp(int index) const;
 
             //motion algorithms are defined under the src/motion folder
             //~
