@@ -3,8 +3,8 @@
 
 namespace global {
 
-    inline pros::Imu imu(21);
-    inline pros::Rotation verticalPod(20);
+    inline pros::Imu imu(15);
+    inline pros::Rotation verticalPod(16);
     inline pros::Rotation horizontalPod(19);
 
     inline lynx::PID heading_correction {
@@ -45,18 +45,18 @@ namespace global {
 
     inline lynx::odom_drive chassis {
         {
-            {1, pros::v5::MotorGears::blue},
-            {2, pros::v5::MotorGears::blue},
-            {3, pros::v5::MotorGears::blue}
+            {14, pros::v5::MotorGears::blue},
+            {-13, pros::v5::MotorGears::blue},
+            {-12, pros::v5::MotorGears::blue}
         },
         {
-            {4, pros::v5::MotorGears::blue},
-            {5, pros::v5::MotorGears::blue},
-            {6, pros::v5::MotorGears::blue}
+            {-17, pros::v5::MotorGears::blue},
+            {18, pros::v5::MotorGears::blue},
+            {19, pros::v5::MotorGears::blue}
         },
         2.75,
-        1,
-        12.0,
+        0.8,
+        11.5,
         &heading_correction,
         &turn_pid,
         &drive_pid,
@@ -67,13 +67,13 @@ namespace global {
         0,
         2,
         63, //GEOOOOOOOOOOOOORGE RUSSELLL
-        150,
+        207,
         1.0, // settle_dist_tolerance (inches)
         1.0, // settle_heading_tolerance (degrees)
         'E', // PTO piston port (pistonA)
         {    // PTO shiftable motors (extraA): even index = left, odd index = right
-            {7, pros::v5::MotorGears::blue},
-            {8, pros::v5::MotorGears::blue}
+            {11, pros::v5::MotorGears::blue},
+            {20, pros::v5::MotorGears::blue}
         }
     };
 
@@ -81,6 +81,6 @@ namespace global {
 
     inline pros::adi::Pneumatics wing('A', false, false);
     inline pros::adi::Pneumatics hood('B', false, false);
-    inline pros::adi::Pneumatics mgsunroof('C', false, false);
+    inline pros::adi::Pneumatics sunroof('C', false, false);
     inline pros::adi::Pneumatics matchloader('D', false, false);
 }

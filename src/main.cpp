@@ -63,15 +63,35 @@ void printTemps(){
 }
 
 void intakeCon(){
-	//rohan u got this
+	if (global::con.get_digital(DIGITAL_R1)){
+        global::hood.set_value(false);
+        global::chassis.set_state(lynx::DriveState::CHASSIS_STANDARD);
+        global::chassis.move_subgroup(127, -127);
+    }
+    else if (global::con.get_digital(DIGITAL_R1) && global::con.get_digital(DIGITAL_R2)){
+        global::hood.set_value(false);
+        global::chassis.set_state(lynx::DriveState::CHASSIS_STANDARD);
+        global::chassis.move_subgroup(-127, 127);
+        global::sunroof.set_value(true);
+    }
+    else if (global::con.get_digital(DIGITAL_R2)){
+        global::hood.set_value(false);
+        global::chassis.set_state(lynx::DriveState::CHASSIS_STANDARD);
+        global::chassis.move_subgroup(127,127);
+    }
+    else if (global::con.get_digital(DIGITAL_L2)){
+        global::hood.set_value(true);
+        global::chassis.set_state(lynx::DriveState::CHASSIS_STANDARD);
+        global::chassis.move_subgroup(127, -127);
+    }
 }
 
 void stateCon(){
-	if (global::con.get_digital_new_press(DIGITAL_Y)) {
+	if (global::con.get_digital_new_press(DIGITAL_DOWN)){
         global::chassis.set_state(lynx::DriveState::CHASSIS_8);
     }
     
-    if (global::con.get_digital_new_press(DIGITAL_RIGHT)) global::matchloader.toggle();
+    if (global::con.get_digital_new_press(DIGITAL_LEFT)) global::matchloader.toggle();
     static bool firstToggle = false;
     if (firstToggle){global::wing.set_value(!global::con.get_digital(DIGITAL_L1));}
     else{

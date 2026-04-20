@@ -46,7 +46,8 @@ namespace lynx {
     // extraA may contain any number of motors. In CHASSIS_8 the first half of
     // the motor list (by index) is driven as the left side and the remainder
     // as the right side; for odd counts the extra motor goes to the right.
-    // In CHASSIS_STANDARD all motors run together via move_subgroup().
+    // In CHASSIS_STANDARD, extraA is driven via move_subgroup(): even indices
+    // use the left velocity, odd indices use the right (matches config extraA).
     // -------------------------------------------------------------------------
     enum class DriveState { CHASSIS_STANDARD, CHASSIS_8 };
 
@@ -103,6 +104,9 @@ namespace lynx {
             // ---- PTO API (no-ops when has_pto == false) ----
             void       set_state(DriveState s);
             DriveState get_state() const { return curr_state; }
+            /** Per-motor velocities in CHASSIS_STANDARD: even index = left, odd = right. */
+            void       move_subgroup(int left_power, int right_power);
+            /** Same velocity on every motor (delegates to move_subgroup(power, power)). */
             void       move_subgroup(int power);
             double     get_extra_temp(int index) const;
 

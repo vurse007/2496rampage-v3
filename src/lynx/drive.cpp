@@ -102,7 +102,7 @@ namespace lynx {
         // left side and the remainder as the right side, so the group can be
         // any size (2, 4, 6, ...). For odd counts the extra motor goes right.
         // In CHASSIS_STANDARD the motors belong to the auxiliary subsystem
-        // and are driven via move_subgroup instead.
+        // and are driven via move_subgroup(left, right) instead.
         if (has_pto && curr_state == DriveState::CHASSIS_8) {
             const auto& motors = extraA->get_motors();
             const std::size_t n    = motors.size();
@@ -153,12 +153,18 @@ namespace lynx {
         pistonA->set_value(s == DriveState::CHASSIS_8);
     }
 
-    void drive::move_subgroup(int power) {
+    void drive::move_subgroup(int bottom_power, int top_power) {
         if (!has_pto) return;
-        // extraA only acts as the auxiliary subsystem in CHASSIS_STANDARD.
         if (curr_state != DriveState::CHASSIS_STANDARD) return;
-        // All motors run together when used as a subgroup, regardless of size.
-        extraA->move(-power);
+        const auto& motors = extraA->get_motors();
+        for (std::size_t i = 0; i < motors.size(); ++i) {
+            const int v = (i % 2 == 0) ? bottom_power : top_power;
+            if (motors[i]) motors[i]->move(v);
+        }
+    }
+
+    void drive::move_subgroup(int power) {
+        move_subgroup(power, power);
     }
 
     double drive::get_extra_temp(int index) const {
