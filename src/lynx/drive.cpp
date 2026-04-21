@@ -110,7 +110,7 @@ namespace lynx {
             for (std::size_t i = 0; i < half; ++i)
                 if (motors[i]) motors[i]->move(left_velocity);
             for (std::size_t i = half; i < n; ++i)
-                if (motors[i]) motors[i]->move(right_velocity);
+                if (motors[i]) motors[i]->move(-right_velocity);
         }
     }
 
