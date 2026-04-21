@@ -35,6 +35,13 @@ namespace lynx {
         if (path.size() < 2) return;
         if (max_speed <= 0.0) return;
 
+        // Snap odometry to the trajectory start so Ramsete sees zero initial error
+        // in pose (matches field-centric paths / sim behavior). Encoders are
+        // zeroed and IMU offset is aligned to the first waypoint heading.
+        const Waypoint& start = path.front();
+        reset(start.x, start.y,
+              utility::degrees_to_radians(start.heading));
+
         utility::timer safety_timer(timeout);
         safety_timer.start();
 
