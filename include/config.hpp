@@ -79,7 +79,7 @@ namespace global {
 
     inline pros::Controller con(pros::E_CONTROLLER_MASTER);
 
-    inline pros::adi::Pneumatics wing('C', false, false);
+    inline pros::adi::Pneumatics wing('H', false, false);
     inline pros::adi::Pneumatics hood('E', false, false);
     inline pros::adi::Pneumatics sunroof('B', false, false);
     inline pros::adi::Pneumatics matchloader('A', false, false);

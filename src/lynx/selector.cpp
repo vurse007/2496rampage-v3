@@ -1,7 +1,4 @@
-#pragma once
-#include "auton.hpp"
-#include "main.h"
-#include <vector>
+#include "selector.hpp"
 
 using namespace pros;
 

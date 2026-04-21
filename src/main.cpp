@@ -1,7 +1,7 @@
 #include "main.h"
 #include "lynx/utility.hpp"
 #include "config.hpp"
-#include "auton.hpp"
+#include "lynx/autons.hpp"
 #include "lynx/selector.hpp"
 
 // lv_obj_t* image;

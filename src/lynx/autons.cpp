@@ -1,15 +1,13 @@
-#include "lynx.hpp"
-#include "auton.hpp"
-#include "selector.hpp"
+#include "autons.hpp"
 
+Auton* auton = nullptr;
+std::string names;
 
-void soloAwp(){}    
-    
+void soloAwpRun() {}
 
-void blank(){}
+void blank() {}
 
-
-Auton soloAwp        ("Solo Awp     ", "Red   ", soloAwp,   "red");
+Auton soloAwp("Solo Awp     ", "Red   ", soloAwpRun, "red");
 
 
 std::vector<Auton> autons = {

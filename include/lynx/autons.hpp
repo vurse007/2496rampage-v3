@@ -1,5 +1,7 @@
+#pragma once
 #include "main.h"
 #include <string>
+#include <vector>
 
 using AutonFunc = void(*)();
 
@@ -26,3 +28,5 @@ class Auton {
 
 extern Auton* auton;       // pointer to currently selected auton
 extern std::string names;  // name of currently selected auton
+
+extern std::vector<Auton> autons;
