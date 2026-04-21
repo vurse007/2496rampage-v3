@@ -2,10 +2,10 @@
 #include "lynx/utility.hpp"
 #include "config.hpp"
 
-lv_obj_t* image;
-LV_IMAGE_DECLARE(f1);
-LV_IMAGE_DECLARE(lynx_img);
-LV_IMAGE_DECLARE(rampage);
+// lv_obj_t* image;
+// LV_IMAGE_DECLARE(f1);
+// LV_IMAGE_DECLARE(lynx_img);
+// LV_IMAGE_DECLARE(rampage);
 
 
 //driver control methods
@@ -77,12 +77,15 @@ void intakeCon(){
     else if (global::con.get_digital(DIGITAL_R2)){
         global::hood.set_value(false);
         global::chassis.set_state(lynx::DriveState::CHASSIS_STANDARD);
-        global::chassis.move_subgroup(127,127);
+        global::chassis.move_subgroup(-127,-127);
     }
     else if (global::con.get_digital(DIGITAL_L2)){
         global::hood.set_value(true);
         global::chassis.set_state(lynx::DriveState::CHASSIS_STANDARD);
         global::chassis.move_subgroup(127, -127);
+    }
+    else{
+        global::chassis.move_subgroup(0,0);
     }
 }
 
@@ -91,7 +94,7 @@ void stateCon(){
         global::chassis.set_state(lynx::DriveState::CHASSIS_8);
     }
     
-    if (global::con.get_digital_new_press(DIGITAL_LEFT)) global::matchloader.toggle();
+    if (global::con.get_digital_new_press(DIGITAL_B)) global::matchloader.toggle();
     static bool firstToggle = false;
     if (firstToggle){global::wing.set_value(!global::con.get_digital(DIGITAL_L1));}
     else{
@@ -110,9 +113,9 @@ void stateCon(){
  */
 void initialize() {
 	global::con.clear();
-	image = lv_image_create(lv_screen_active());
-	lv_image_set_src(image, &f1);
-	lv_obj_align(image, LV_ALIGN_CENTER, 0, 0);
+	// image = lv_image_create(lv_screen_active());
+	// lv_image_set_src(image, &f1);
+	// lv_obj_align(image, LV_ALIGN_CENTER, 0, 0);
 }
 
 /**

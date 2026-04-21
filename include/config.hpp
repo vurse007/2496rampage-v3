@@ -70,7 +70,7 @@ namespace global {
         207,
         1.0, // settle_dist_tolerance (inches)
         1.0, // settle_heading_tolerance (degrees)
-        'E', // PTO piston port (pistonA)
+        'D', // PTO piston port (pistonA)
         {    // PTO shiftable motors (extraA): even index = left, odd index = right
             {11, pros::v5::MotorGears::blue},
             {20, pros::v5::MotorGears::blue}
@@ -79,8 +79,8 @@ namespace global {
 
     inline pros::Controller con(pros::E_CONTROLLER_MASTER);
 
-    inline pros::adi::Pneumatics wing('A', false, false);
-    inline pros::adi::Pneumatics hood('B', false, false);
-    inline pros::adi::Pneumatics sunroof('C', false, false);
-    inline pros::adi::Pneumatics matchloader('D', false, false);
+    inline pros::adi::Pneumatics wing('C', false, false);
+    inline pros::adi::Pneumatics hood('E', false, false);
+    inline pros::adi::Pneumatics sunroof('B', false, false);
+    inline pros::adi::Pneumatics matchloader('A', false, false);
 }
