@@ -115,9 +115,9 @@ namespace lynx {
 
             //basic motions:
             std::optional<double> UNIVERSAL_TARGET_HEADING;
-            void straight(double target, int timeout, double scale);
-            void turn_abs(double target, int timeout, double scale);
-            void turn_rel(double delta_deg, int timeout, double scale);
+            void straight(double target, int timeout, double scale=1.0);
+            void turn_abs(double target, int timeout, double scale=1.0);
+            void turn_rel(double delta_deg, int timeout, double scale=1.0);
     };
 
 }

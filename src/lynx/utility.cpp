@@ -1,7 +1,8 @@
 #include "utility.hpp"
+#include "config.hpp"
 
 namespace lynx {
-    
+
     namespace utility{
 
         double degrees_to_radians(double deg){
@@ -10,7 +11,7 @@ namespace lynx {
         double radians_to_degrees(double rad){
             return rad * 180.0 / M_PI;
         }
-        
+
         double wrap_to_pi(double angle){
             angle = fmod(angle + M_PI, 2 * M_PI);
             if (angle < 0) angle += 2 * M_PI;
@@ -98,6 +99,27 @@ namespace lynx {
             }
         }
 
+        void middle_goal(int speed){
+            global::hood.set_value(false);
+            global::chassis.set_state(lynx::DriveState::CHASSIS_STANDARD);
+            global::chassis.move_subgroup(-speed,-speed);
+        }
+        void long_goal(int speed){
+            global::hood.set_value(true);
+            global::chassis.set_state(lynx::DriveState::CHASSIS_STANDARD);
+            global::chassis.move_subgroup(speed, -speed);
+        }
+        void low_goal(int speed){
+            global::hood.set_value(false);
+            global::chassis.set_state(lynx::DriveState::CHASSIS_STANDARD);
+            global::chassis.move_subgroup(speed, speed);
+        }
+        void storage(int speed){
+            global::hood.set_value(false);
+            global::chassis.set_state(lynx::DriveState::CHASSIS_STANDARD);
+            global::chassis.move_subgroup(speed, -speed);
+        }
+
     }
-    
+
 }

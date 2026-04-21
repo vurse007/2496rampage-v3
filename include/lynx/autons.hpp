@@ -1,5 +1,6 @@
 #pragma once
 #include "main.h"
+#include "config.hpp"
 #include <string>
 #include <vector>
 

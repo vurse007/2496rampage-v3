@@ -1,6 +1,4 @@
 #include "odom.hpp"
-#include "utility.hpp"
-#include <cmath>
 
 namespace lynx {
 

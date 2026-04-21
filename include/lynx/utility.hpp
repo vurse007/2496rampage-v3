@@ -41,6 +41,10 @@ namespace lynx {
         double get_abs_rot_err(double target, double current);
 
         void print_info(int time, pros::Controller *controller, const std::vector<std::string>& labels, const std::vector<double>& values);
-
+        
+        void middle_goal(int speed);
+        void long_goal(int speed);
+        void low_goal(int speed);
+        void storage(int speed);
     }
 }
