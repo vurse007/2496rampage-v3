@@ -1,6 +1,8 @@
 #include "main.h"
 #include "lynx/utility.hpp"
 #include "config.hpp"
+#include "auton.hpp"
+#include "lynx/selector.hpp"
 
 // lv_obj_t* image;
 // LV_IMAGE_DECLARE(f1);
@@ -113,6 +115,15 @@ void stateCon(){
  */
 void initialize() {
 	global::con.clear();
+
+    // global::imu.reset();
+    // while (global::imu.is_calibrating()) pros::delay(20);
+
+    static Auton curr_auto = autons[auton_selector(autons, global::con)];
+    names = curr_auto.get_name1() + " " + curr_auto.get_name2();  // Save display name
+    auton = &curr_auto;
+
+    //global::colorSort.set_all(180, 100, 25, "red");
 	// image = lv_image_create(lv_screen_active());
 	// lv_image_set_src(image, &f1);
 	// lv_obj_align(image, LV_ALIGN_CENTER, 0, 0);
@@ -147,7 +158,9 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+     if (auton) {(*auton).run();} 
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
