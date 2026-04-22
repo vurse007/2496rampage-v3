@@ -39,7 +39,7 @@ void driverCon() {
     if (std::abs(turn_raw) < 5)  turn_raw = 0;
 
     // Apply your non-linear curve **only to the turn axis**
-    double turn_curved = /*apply_turn_curve(*/turn_raw/*)*/;
+    double turn_curved = apply_turn_curve(turn_raw);
 
     // Classic arcade mixing
     double left_power  = forward + turn_curved;
@@ -69,33 +69,31 @@ void intakeCon(){
         global::hood.set_value(false);
         global::chassis.set_state(lynx::DriveState::CHASSIS_STANDARD);
         global::chassis.move_subgroup(127, -127);
-    }
-    else if (global::con.get_digital(DIGITAL_R1) && global::con.get_digital(DIGITAL_R2)){
+    } else if (global::con.get_digital(DIGITAL_R1) && global::con.get_digital(DIGITAL_R2)){
         global::hood.set_value(false);
         global::chassis.set_state(lynx::DriveState::CHASSIS_STANDARD);
-        global::chassis.move_subgroup(-127, 127);
-        global::sunroof.set_value(true);
-    }
-    else if (global::con.get_digital(DIGITAL_R2)){
+        global::chassis.move_subgroup(127, 127);
+    } else if (global::con.get_digital(DIGITAL_R2)){
         global::hood.set_value(false);
         global::chassis.set_state(lynx::DriveState::CHASSIS_STANDARD);
         global::chassis.move_subgroup(-127,-127);
-    }
-    else if (global::con.get_digital(DIGITAL_L2)){
+    } else if (global::con.get_digital(DIGITAL_L2)){
         global::hood.set_value(true);
         global::chassis.set_state(lynx::DriveState::CHASSIS_STANDARD);
         global::chassis.move_subgroup(127, -127);
-    }
-    else{
+    } else{
         global::chassis.move_subgroup(0,0);
     }
 }
 
 void stateCon(){
-	if (global::con.get_digital_new_press(DIGITAL_DOWN)){
+	if (global::con.get_digital_new_press(DIGITAL_RIGHT)){
         global::chassis.set_state(lynx::DriveState::CHASSIS_8);
     }
-    
+    if (global::con.get_digital_new_press(DIGITAL_DOWN)){
+        global::sunroof.toggle();
+    }
+
     if (global::con.get_digital_new_press(DIGITAL_B)) global::matchloader.toggle();
     static bool firstToggle = false;
     if (firstToggle){global::wing.set_value(!global::con.get_digital(DIGITAL_L1));}
@@ -114,10 +112,12 @@ void stateCon(){
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	global::con.clear();
 
-    // global::imu.reset();
-    // while (global::imu.is_calibrating()) pros::delay(20);
+
+    global::imu.reset();
+    while (global::imu.is_calibrating()) pros::delay(20);
+
+    global::con.clear();
 
     static Auton curr_auto = autons[auton_selector(autons, global::con)];
     names = curr_auto.get_name1() + " " + curr_auto.get_name2();  // Save display name
@@ -159,7 +159,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-     if (auton) {(*auton).run();} 
+     if (auton) {(*auton).run();}
 }
 
 /**
@@ -176,10 +176,18 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+
+    global::con.clear();
+    global::chassis.set_brake_mode(MOTOR_BRAKE_COAST);
 	while (true){
 		driverCon();
 		intakeCon();
 		stateCon();
 		printTemps();
+		if (global::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
+            if (!pros::competition::is_field_control()) {
+                if (auton != nullptr) { auton->run(); }
+            }
+        }
 	}
 }

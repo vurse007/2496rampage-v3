@@ -20,17 +20,17 @@ int auton_selector(std::vector<Auton>& autons, pros::Controller& controller) {
           pros::delay(10);
           controller.clear_line(1);
           pros::delay(10);
-          
+
         selected--;
       }
       if (controller.get_digital_new_press(E_CONTROLLER_DIGITAL_RIGHT) &&
           selected < (int)autons.size() - 1) {
         pros::delay(10);
         controller.clear_line(1);
-        pros::delay(10); 
+        pros::delay(10);
         selected++;
       }
-    } 
+    }
     else {
       controller.clear();
       controller.print(0, 0, "Selected:");
@@ -46,4 +46,3 @@ int auton_selector(std::vector<Auton>& autons, pros::Controller& controller) {
     timer++;
   }
 }
-

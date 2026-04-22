@@ -2,6 +2,8 @@
 
 #include "drive.hpp"
 #include "bezier.hpp"
+#include "utility.hpp"
+#include <cmath>
 
 namespace lynx {
 
