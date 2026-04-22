@@ -39,7 +39,7 @@ void driverCon() {
     if (std::abs(turn_raw) < 5)  turn_raw = 0;
 
     // Apply your non-linear curve **only to the turn axis**
-    double turn_curved = /*apply_turn_curve(*/turn_raw/*)*/;
+    double turn_curved = apply_turn_curve(turn_raw);
 
     // Classic arcade mixing
     double left_power  = forward + turn_curved;
@@ -113,14 +113,14 @@ void stateCon(){
 void initialize() {
 
 
-    //global::imu.reset();
-    //while (global::imu.is_calibrating()) pros::delay(20);
+    global::imu.reset();
+    while (global::imu.is_calibrating()) pros::delay(20);
 
     global::con.clear();
 
-    //static Auton curr_auto = autons[auton_selector(autons, global::con)];
-    //names = curr_auto.get_name1() + " " + curr_auto.get_name2();  // Save display name
-    //auton = &curr_auto;
+    static Auton curr_auto = autons[auton_selector(autons, global::con)];
+    names = curr_auto.get_name1() + " " + curr_auto.get_name2();  // Save display name
+    auton = &curr_auto;
 
     //global::colorSort.set_all(180, 100, 25, "red");
 	// image = lv_image_create(lv_screen_active());
@@ -158,7 +158,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-     //if (auton) {(*auton).run();}
+     if (auton) {(*auton).run();}
 }
 
 /**
@@ -183,10 +183,10 @@ void opcontrol() {
 		intakeCon();
 		stateCon();
 		printTemps();
-		// if (global::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
-  //           if (!pros::competition::is_field_control()) {
-  //               if (auton != nullptr) { auton->run(); }
-  //           }
-  //       }
+		if (global::con.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
+            if (!pros::competition::is_field_control()) {
+                if (auton != nullptr) { auton->run(); }
+            }
+        }
 	}
 }

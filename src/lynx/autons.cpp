@@ -67,7 +67,7 @@ void left_half() {
 void right_half(){
     queue.start();
     chassis.reset(0,0,0);
-    chassis.straight(31.25, 1200, 0.7);
+    chassis.straight(30.25, 1200, 0.7);
     pros::delay(50);
     chassis.turn_abs(90, 600);
     global::matchloader.set_value(true);
@@ -78,11 +78,14 @@ void right_half(){
     queue.schedule_delay(300, []() {
         lynx::utility::low_goal(0);
     });
-    chassis.straight(-31, 900, 0.55);
-    lynx::utility::low_goal(-127);
+
     queue.schedule_delay(300, []() {
-        chassis.straight(-3, 300);
+        hood.set_value(true);
     });
+    hood.set_value(true);
+    chassis.move_subgroup(0,0);
+
+    chassis.straight(-31, 900, 0.55);    
     pros::delay(50);
     lynx::utility::long_goal(127);
     chassis.turn_abs(90, 1000);
@@ -94,16 +97,15 @@ void right_half(){
     lynx::utility::storage(127);
     pros::delay(200);
 
-    chassis.straight(30, 900, 0.65);
-    global::matchloader.set_value(true);
+    chassis.straight(33, 900, 0.65);
     pros::delay(1000);
     global::matchloader.set_value(false);
 
-    //chassis.turn_abs(-142, 900);
+    chassis.turn_abs(-132, 700);
     pros::delay(100);
     chassis.straight(12.5, 800, 0.60);
     // chassis.turn_abs(-149, 300);
-    lynx::utility::low_goal(-127);
+    lynx::utility::low_goal(127);
     pros::delay(1000);
     chassis.turn_abs(-136, 300);
     global::matchloader.set_value(false);
@@ -114,9 +116,7 @@ void right_half(){
     lynx::utility::low_goal(0);
 
     global::wing.set_value(false);
-    queue.schedule_delay(500, []() {
-        chassis.set_state(lynx::DriveState::CHASSIS_8);
-    });
+
     chassis.set_brake_mode(MOTOR_BRAKE_HOLD);
 
     chassis.straight(25, 2500, 0.55);
@@ -131,11 +131,13 @@ void blank() {}
 Auton leftHalf("left_half     ", "Red   ", left_half, "red");
 Auton Blank("blank        ", "      ", blank, "");
 Auton MinAWP("min_awp      ", "      ", min_awp, "");
+Auton RightHalf("righthalf     ", "red", right_half, "");
 
 
 std::vector<Auton> autons = {
     leftHalf,
     Blank,
-    MinAWP
+    MinAWP,
+    RightHalf
 }; 
 
