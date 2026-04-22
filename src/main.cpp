@@ -89,8 +89,9 @@ void intakeCon(){
 void stateCon(){
 	if (global::con.get_digital_new_press(DIGITAL_RIGHT)){
         global::chassis.set_state(lynx::DriveState::CHASSIS_8);
-    } else if (global::con.get_digital_new_press(DIGITAL_DOWN)){
-        global::sunroof.set_value(!global::sunroof.is_extended());
+    }
+    if (global::con.get_digital_new_press(DIGITAL_DOWN)){
+        global::sunroof.toggle();
     }
 
     if (global::con.get_digital_new_press(DIGITAL_B)) global::matchloader.toggle();
